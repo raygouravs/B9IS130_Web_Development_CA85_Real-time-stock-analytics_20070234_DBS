@@ -1,3 +1,4 @@
+// Market Simulation Service
 export class MarketService {
   constructor(redisRepo) {
     this.redisRepo = redisRepo;
@@ -5,6 +6,7 @@ export class MarketService {
                    'WMT', 'JPM', 'MA', 'PG', 'UNH', 'HD', 'BAC', 'DIS', 'PFE', 'ADBE'];
   }
 
+  // simulates stock tick data
   generateStockTick(symbol) {
     return {
       symbol,
@@ -14,6 +16,7 @@ export class MarketService {
     };
   }
 
+  // starts the service
   start() {
     console.log("Market Simulation Started...");
     setInterval(async () => {

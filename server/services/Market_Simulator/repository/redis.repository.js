@@ -1,6 +1,6 @@
 /*
     REFERENCES: 
-    - Redis Ltd. (n.d.) XADD. Available at: https://redis.io/docs/latest/commands/xadd/
+    - Redis XADD. Available at: https://redis.io/docs/latest/commands/xadd/
 */
 
 import { redis } from '../config/redis.js';
