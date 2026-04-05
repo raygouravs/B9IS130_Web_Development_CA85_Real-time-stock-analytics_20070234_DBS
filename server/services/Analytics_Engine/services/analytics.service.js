@@ -18,6 +18,7 @@ export class AnalyticsService {
     if (!this.memoryStore[symbol]) {
       this.memoryStore[symbol] = {
         prices: [],
+        sma:[],
         prevClose: null,
         lastPrice: null,
         trend: "",
@@ -58,6 +59,13 @@ export class AnalyticsService {
 
   }
 
+  calculateSMA(prices) {
+    const cleanedPrices = prices.map(p => Number(p))
+    const sma = cleanedPrices.reduce((sum, price) => sum + price, 0) / cleanedPrices.length;
+    const smaRounded = Math.round(sma * 100) / 100;
+    return smaRounded
+  }
+
   // GAINERS/LOSERS computation
   gainOrLossDashboardMetric(symbol, tick) {
     const stock = this.memoryStore[symbol]
@@ -69,6 +77,17 @@ export class AnalyticsService {
     }
 
     stock.lastPrice = Number(tick.price);
+  
+    //calculating and storing SMA
+    const sma = this.calculateSMA(stock.prices)
+    if(stock.sma.length < 10) {
+      stock.sma.push(sma)
+    } else {
+      stock.sma.splice(0, stock.sma.length - 9);
+      stock.sma.push(sma);
+    }
+
+    //setting the timestamp
     stock.timestamp = Date.now();
 
     if(stock.prices.length > 1){
