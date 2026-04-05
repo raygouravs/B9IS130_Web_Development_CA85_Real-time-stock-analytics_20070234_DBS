@@ -8,10 +8,9 @@ export class AnalyticsService {
   constructor(redisRepo) {
     this.redisRepo = redisRepo;
 
-    this.stocks = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA', 'META', 'NVDA', 'BRKB', 'V', 'JNJ', 
-                   'WMT', 'JPM', 'MA', 'PG', 'UNH', 'HD', 'BAC', 'DIS', 'PFE', 'ADBE'];
+    this.stocks = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA', 'META', 'NVDA', 'BRKB', 'V', 'JNJ'];
 
-    // simple in-memory state
+    // in-memory state
     this.memoryStore = {};
   }
 
@@ -26,6 +25,37 @@ export class AnalyticsService {
     }
   }
 
+  async calculateMarketIndexLineChart() {
+    
+    const stock_prices = [];
+
+    for(const symbol of this.stocks){
+      const stock_price = this.memoryStore[symbol].lastPrice;
+      console.log(`${symbol} last price => ` + stock_price);
+      if(stock_price !== null && stock_price!== undefined){
+        stock_prices.push(stock_price);
+      }
+    }
+
+    let price_sum = 0;
+
+    for(const price of stock_prices){
+      price_sum += Number(price);
+    }
+
+    if (stock_prices.length === 0) return;
+
+    const indexVal = price_sum/stock_prices.length
+    console.log("price_sum => " + price_sum);
+    console.log("stock prices length => " + stock_prices.length);
+    console.log("computed market index => " + indexVal);
+
+    await this.redisRepo.addToStream('marketindex', {
+      value: indexVal
+    }, 1000);
+
+  }
+
   gainOrLossDashboardMetric(symbol, tick) {
     const stock = this.memoryStore[symbol]
     if(stock.prices.length < 10) {
@@ -35,7 +65,7 @@ export class AnalyticsService {
       stock.prices.push(tick.price);
     }
 
-    stock.lastPrice = tick.price;
+    stock.lastPrice = Number(tick.price);
 
     if(stock.prices.length > 1){
       const arrlen = stock.prices.length;
@@ -60,18 +90,18 @@ export class AnalyticsService {
     }
   }
 
-  // process the ticks here ...
+  // stock-tick data processing pipeline
   async processTick(stocksymbol, tick) {
     //console.log("tick data processed.." + " " + stocksymbol + ":" + " " + JSON.stringify(tick, null, 2))
 
-    //calculate gaining/losing
+    //calculate trend
     this.gainOrLossDashboardMetric(stocksymbol, tick)
-
   }
 
   async readStockTickData(stocksymbol) {
     let lastId = "0-0";
-    const POLL_INTERVAL_MS = 500;
+    //// const POLL_INTERVAL_MS = 500; // OG val
+    const POLL_INTERVAL_MS = 5000;
 
     while (true) {
       console.log("inside while loop...");
@@ -103,7 +133,7 @@ export class AnalyticsService {
           }
       }
 
-      // Wait before next poll
+      // Timeout before polling
       await new Promise((res) => setTimeout(res, POLL_INTERVAL_MS));
     } catch (err) {
       console.error("Error reading Redis stream:", err);
@@ -123,5 +153,9 @@ export class AnalyticsService {
     for(const symbol of this.stocks){
       this.readStockTickData(symbol);
     }
+
+    setInterval(() => {
+      this.calculateMarketIndexLineChart();
+    }, 5000);
   }
 }

@@ -41,7 +41,7 @@ export class AnalyticsRedisRepository {
         const keys = await redis.keys("ticks:*");
         console.log("All tick streams:", keys);
     try {
-      console.log("streaKey: " + streamKey);
+      console.log("streamKey: " + streamKey);
       const redisData = await redis.xread(streamKey, lastId, { count });
       return redisData;
     } catch (err) {

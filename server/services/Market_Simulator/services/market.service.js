@@ -2,8 +2,7 @@
 export class MarketService {
   constructor(redisRepo) {
     this.redisRepo = redisRepo;
-    this.stocks = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA', 'META', 'NVDA', 'BRKB', 'V', 'JNJ', 
-                   'WMT', 'JPM', 'MA', 'PG', 'UNH', 'HD', 'BAC', 'DIS', 'PFE', 'ADBE'];
+    this.stocks = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA', 'META', 'NVDA', 'BRKB', 'V', 'JNJ'];
   }
 
   // simulates stock tick data
@@ -31,6 +30,6 @@ export class MarketService {
           console.error(`Failed to publish ${stock}:`, err);
         }
       }
-    }, 2000);
+    }, 2000); // OG val - 2000
   }
 }
