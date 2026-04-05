@@ -1,5 +1,5 @@
 // Market Simulation Service
-export class MarketService {
+export class MarketSimulationService {
   constructor(redisRepo) {
     this.redisRepo = redisRepo;
     this.stocks = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA', 'META', 'NVDA', 'BRKB', 'V', 'JNJ'];
@@ -17,7 +17,11 @@ export class MarketService {
 
   // starts the service
   start() {
+    
+    const SIMULATION_INTERVAL = 15000; // OG val - 2000
+
     console.log("Market Simulation Started...");
+    
     setInterval(async () => {
       for (const stock of this.stocks) {
         const tick = this.generateStockTick(stock);
@@ -30,6 +34,6 @@ export class MarketService {
           console.error(`Failed to publish ${stock}:`, err);
         }
       }
-    }, 2000); // OG val - 2000
+    }, SIMULATION_INTERVAL); 
   }
 }

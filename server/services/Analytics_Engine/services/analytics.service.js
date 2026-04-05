@@ -25,6 +25,7 @@ export class AnalyticsService {
     }
   }
 
+  // MARKET INDEX computation
   async calculateMarketIndexLineChart() {
     
     const stock_prices = [];
@@ -56,6 +57,7 @@ export class AnalyticsService {
 
   }
 
+  // GAINERS/LOSERS computation
   gainOrLossDashboardMetric(symbol, tick) {
     const stock = this.memoryStore[symbol]
     if(stock.prices.length < 10) {
@@ -94,14 +96,14 @@ export class AnalyticsService {
   async processTick(stocksymbol, tick) {
     //console.log("tick data processed.." + " " + stocksymbol + ":" + " " + JSON.stringify(tick, null, 2))
 
-    //calculate trend
+    //calculate gainers/losers trend
     this.gainOrLossDashboardMetric(stocksymbol, tick)
   }
 
   async readStockTickData(stocksymbol) {
     let lastId = "0-0";
     //// const POLL_INTERVAL_MS = 500; // OG val
-    const POLL_INTERVAL_MS = 5000;
+    const POLL_INTERVAL_MS = 15000;
 
     while (true) {
       console.log("inside while loop...");
@@ -145,6 +147,7 @@ export class AnalyticsService {
   // Start the service
   async start() {
     console.log("Analytics Service Started...");
+    const MARKET_INDEX_INTERVAL = 15000;
 
     for(const sym of this.stocks){
        this.initStockSymbolInMemoryStore(sym)
@@ -156,6 +159,6 @@ export class AnalyticsService {
 
     setInterval(() => {
       this.calculateMarketIndexLineChart();
-    }, 5000);
+    }, MARKET_INDEX_INTERVAL);
   }
 }

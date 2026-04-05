@@ -1,13 +1,13 @@
 import express from 'express';
 import { RedisRepository } from './repository/redis.repository.js';
-import { MarketService } from './services/market.service.js';
+import { MarketSimulationService } from './services/marketsimulation.service.js';
 
 const app = express();
 const port = 3000;
 
 // Dependency Injection Setup
 const redisRepo = new RedisRepository();
-const marketService = new MarketService(redisRepo);
+const marketService = new MarketSimulationService(redisRepo);
 
 // Start simulation immediately
 marketService.start();
