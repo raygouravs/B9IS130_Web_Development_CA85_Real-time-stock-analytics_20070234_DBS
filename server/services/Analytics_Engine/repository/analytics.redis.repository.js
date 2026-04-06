@@ -38,8 +38,8 @@ export class AnalyticsRedisRepository {
 
 
     async readStream(streamKey, lastId = "0-0", count = 10) {
-        const keys = await redis.keys("ticks:*");
-        console.log("All tick streams:", keys);
+        // const keys = await redis.keys("ticks:*");
+        // console.log("All tick streams:", keys);
     try {
       console.log("streamKey: " + streamKey);
       const redisData = await redis.xread(streamKey, lastId, { count });
