@@ -1,16 +1,16 @@
 import express from 'express';
-import { RedisRepository } from './repository/redis.repository.js';
-import { MarketSimulationService } from './services/marketsimulation.service.js';
+import { WSRedisRepository } from './repository/ws.repository.js';
+import { WSService } from './service/ws.service.js';
 
 const app = express();
 const port = 3000;
 
 // Dependency Injection Setup
-const redisRepo = new RedisRepository();
-const marketService = new MarketSimulationService(redisRepo);
+const redisRepo = new WSRedisRepository();
+const websocketService = new WSService(redisRepo);
 
 // Start simulation immediately
-marketService.start();
+websocketService.startWSService();
 
 app.get('/status', (req, res) => {
   res.json({ status: 'WS service is running' });
